@@ -34,7 +34,7 @@ def modularity(G, communities, weight="weight", resolution=1):
         raise NotAPartition(G, communities)
         
         directed = G.is_directed()
-    if not nx.is_negatively_weighted(G):
+    if not nx.is_negatively_weighted(G): #Original code from networkx for positive weighted, directed and undirected edges.
         
         if directed:
             out_degree = dict(G.out_degree(weight=weight))
@@ -71,7 +71,7 @@ def modularity(G, communities, weight="weight", resolution=1):
                 comm = set(community)
                 L_a = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if v in comm) #L_c identical, sum of all weights within a community
                 
-                pos_degree_sum_out = [out_degree[u] for u in community]
+                pos_degree_sum_out = sum([out_degree[u] for u in community])
                 pos_degree_sum_in = 
                 
                 neg_degree_sum_out = 
@@ -81,11 +81,11 @@ def modularity(G, communities, weight="weight", resolution=1):
             
             return (1/(2*(pos_total_weight + neg_total_weight)))*sum(map(community_contribution_directed_negatively_weighted, communities))
 '''
-En esto anterior, esta añadida la extensión propia de redes direccionadas
+En esto anterior, está añadida la extensión propia de redes direccionadas
 '''
             
         else: #Negatively weighted, non directed 
-              pos_total_weight = sum(wt for u, v, wt in G.edges(data = weight, default=1) if wt > 0) #Sum all positive links
+            pos_total_weight = sum(wt for u, v, wt in G.edges(data = weight, default=1) if wt > 0) #Sum all positive links
             neg_total_weight = sum(wt for u, v, wt in G.edges(data=weight, default=1) if wt < 0) #Sum all negative links
             
             
