@@ -81,8 +81,24 @@ print( (1/(2*(pos_total_weight + neg_total_weight)))*sum(map(community_contribut
 #     print(G.edges(community))# g.edges(community) devuelve lista de tuplas (u,v,wt) cuyo destino esta en community (v is in community)
 
 community = list(communities[0])
-print(G.edges([2,3], data=weight, default=1))
-# print()
-# # w_in_pos_comm = sum(wt for u, v, wt in G.edges(community, data=weight, default=1) if v in community)
+print('the community is ',community)
 
-# print(w_in_pos_comm)
+
+w_out_all_comm = G.edges(community, data=weight, default=1)
+print('all weights OUT the community: ',w_out_all_comm)
+w_out_positive_comm = [wt for u,v,wt in w_out_all_comm if wt > 0]
+print('positive weights out: ',w_out_positive_comm)
+w_out_negative_comm = [wt for u,v,wt in w_out_all_comm if wt < 0]
+print('negative weights out: ',w_out_negative_comm)
+
+edges_all = G.edges(data = weight)
+print('every edge on the Graph is: ',edges_all)
+
+incident_weights_into_comm = [wt for u,v,wt in edges_all if v in community]
+print('incident weights into the community are: ',incident_weights_into_comm)
+
+incident_positive_weights_into_comm = [wt for u,v,wt in edges_all if v in community and wt > 0]
+print('incident positive weights into the community are: ',incident_positive_weights_into_comm)
+
+incident_negative_weights_into_comm = [wt for u,v,wt in edges_all if v in community and wt<0]
+print('incident negative weights into the community are: ',incident_negative_weights_into_comm)
