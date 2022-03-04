@@ -6,6 +6,30 @@ from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 from networkx.algorithms.community.community_utils import is_partition
 
+class NotAPartition(NetworkXError):
+    """Raised if a given collection is not a partition."""
+
+    def __init__(self, G, collection):
+        msg = f"{G} is not a valid partition of the graph {collection}"
+        super().__init__(msg)
+
+
+def _require_partition(G, partition):
+    """Decorator to check that a valid partition is input to a function
+
+    Raises :exc:`networkx.NetworkXError` if the partition is not valid.
+
+    This decorator should be used on functions whose first two arguments
+    are a graph and a partition of the nodes of that graph (in that
+    order)
+    """
+    if is_partition(G, partition):
+        return G, partition
+    raise nx.NetworkXError("`partition` is not a valid partition of the nodes of G")
+
+
+require_partition = argmap(_require_partition, (0, 1))
+
 def mymodularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
     

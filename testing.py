@@ -20,6 +20,20 @@ for i in range(len(df_edges)):
     tuples_from_to.append((df_edges['from'][i],df_edges['to'][i],df_edges['weight'][i]))
 MDG.add_weighted_edges_from(tuples_from_to)
 
-c = list(community.modularity_max.greedy_modularity_communities(MDG))
+c = community.modularity_max.greedy_modularity_communities(MDG)
 
-print(MDG.nodes)
+# Busco la comunidad en la que se encuentra el nodo 'target'
+i = 0
+target = 1032
+
+if not any([target in comm for comm in c]):
+    print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
+
+#node found in a community, lets see which one:
+
+for community in c:
+    
+    if any([target in community]):
+        print('nodo',target,'encontrado en comunidad', i)
+    
+    i = i+1 

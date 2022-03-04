@@ -4,9 +4,38 @@ import random
 
 def max_of_nonimprovements(net_size):
     return net_size/2
+def find_nodes_community(communities, target_node):
+    ''' This function takes a list of communities to find which one hosts the target node
+    
+    Parameters
+    ----------
+    communities : list or iterable of set of nodes.
+        groups of nodes, one of which, contains our targeted node
+
+    target_node : int
+     node to be found in one of the communities given
+    
+    Returns
+    -------
+    host_community_position : position of the community that contains the node in the given list 'communities'
+    '''
+
+    if not any([target_node in comm for comm in communities]):
+        print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
+        return -1
+
+    i = 0
+    for community in communities:
+                
+        if any([target_node in community]):
+            host_community_position = i
+            return host_community_position
+
+        i = i+1
 
 def solution_from_move(network, s_iter, node):
-    #'move operator acts on one node aata time, moving it from its current community to another selected at random, or creating a new one. Among the solutions in the neighbourhood, the best one is chosen to become the new current solution for the next iteration of the algorithm'
+    #'move operator acts on one node aata time, moving it from its current community to another selected at random, or creating a new one.
+    #Among the solutions in the neighbourhood, the best one is chosen to become the new current solution for the next iteration of the algorithm'
     
     #Por tanto buscamos en este metodo mover un solo nodo, escogiendo aleatoriamente entre las opciones:
     # - Mover el nodo de una comunidad a otra (aleatoria)
@@ -14,10 +43,8 @@ def solution_from_move(network, s_iter, node):
     
     
     def change_to_random_community(network, s_iter, node):
-        
-        # while(set(random.choice(s_iter))):
-            
-        
+        # En primer lugar, encontramos en que comunidad está node
+        nodes_host_community = find_nodes_community()
         return new_random_partition
     
     return 
@@ -38,7 +65,7 @@ def explore_neighborhood(network, s_iter, s_best, tabu_moves, s_neigh, node_best
 
 def tabu_modularity_optimization(network, s_init):
     '''
-    Initial_solution = group of nodes (partition of the network)
+    Initial_solution = group of nodes (partition of the network). I understand it as different sets of nodes which makes different communities
     '''
     tabu_tenure = 5 # maximo numero de iteraciones en los que un mismo movimiento no se puede repetir
     tabu_moves = [] #contador de movimientos prohibidos
