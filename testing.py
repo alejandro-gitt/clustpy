@@ -23,17 +23,26 @@ MDG.add_weighted_edges_from(tuples_from_to)
 c = community.modularity_max.greedy_modularity_communities(MDG)
 
 # Busco la comunidad en la que se encuentra el nodo 'target'
-i = 0
-target = 1032
+# i = 0
+# target = 1032
 
-if not any([target in comm for comm in c]):
-    print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
+# if not any([target in comm for comm in c]):
+#     print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
 
-#node found in a community, lets see which one:
+# #node found in a community, lets see which one:
 
-for community in c:
+# for community in c:
     
-    if any([target in community]):
-        print('nodo',target,'encontrado en comunidad', i)
+#     if any([target in community]):
+#         print('nodo',target,'encontrado en comunidad', i)
     
-    i = i+1 
+#     i = i+1 
+print(min(MDG.nodes))
+print(max(MDG.nodes))
+moves = [0] * (max(MDG.nodes)+1)
+
+moves[593] = 292929
+print(moves[599])
+
+# for node in MDG.nodes:
+#     print(moves[node])
