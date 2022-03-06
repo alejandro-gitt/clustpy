@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from networkx.algorithms.community.community_utils import is_partition
+# from networkx.algorithms.community.community_utils import is_partition
 from mymod import mymodularity
 from tabusearch import tabu_modularity_optimization
 from tabusearch import find_nodes_community
@@ -55,37 +55,9 @@ show_mygraph(G,communities)
 print('MODULARIDAD',mymodularity(G,communities))
 #quiero mover nodo de una comunidad a otra aleatoria.
 #- Si no hay mas comunidades (solo existe 1), crear una nueva e introducir el nodo en la misma
-node = 1
-if len(communities) <= 1:
-    #Debemos crear una nueva comunidad en la que introducir el nodo
-    print('Solo existe una comunidad o ninguna, creamos una nueva que solo contenga al nodo')
-    communities.append(frozenset({node}))
-else:
-    # Movemos el nodo de su comunidad actual a otra aleatoria
-    print('originalmente',communities)
-    current_community_index = find_nodes_community(communities, node) #INDICE
-    dest_community_index = randrange(0,len(communities),1)
-    while(dest_community_index == current_community_index):
-        # print('coincide el random',dest_community_index,'ACTUAL:',current_community_index)
-        dest_community_index = randrange(0,len(communities),1)
-    
-    print('nodo',node,'pretende ir de comunidad',current_community_index,'a',dest_community_index)
-
-    #Añadimos el nodo a destination_community y lo eliminamos el original:
-    print('comunidades originalmente',communities)
-    #Copiamos las comunidades en len(communities) 'sets' en lugar de frozensets para poder añadir y
-    # eliminar, aunque luego lo volveremos a convertir en frozenset
-
-    communities_setted = [set(community) for community in communities]
-    communities_setted[dest_community_index].add(node)
-    communities_setted[current_community_index].remove(node)
-    communities = [frozenset(community_setted) for community_setted in communities_setted]
-
-    print('comunidades finalmente',communities)
-
 show_mygraph(G,communities)
 
 print('optimizacion con tabu search:')
 particion_optimizada = tabu_modularity_optimization(G,communities)
 show_mygraph(G,particion_optimizada)
-print('MODULARIDAD OPTIMIZADA:', mymodularity(G,particion_optimizada))
+print('MODULARIDAD OPTIMIZADA CON TABU SEARCH:', mymodularity(G,particion_optimizada))
