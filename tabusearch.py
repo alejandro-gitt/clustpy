@@ -49,17 +49,16 @@ def solution_from_move(network, s_iter, node):
             communities.append(frozenset({node}))
         else:
             # Movemos el nodo de su comunidad actual a otra aleatoria
-            print('originalmente',communities)
             current_community_index = find_nodes_community(communities, node) #INDICE
             dest_community_index = randrange(0,len(communities),1)
             while(dest_community_index == current_community_index):
                 # print('coincide el random',dest_community_index,'ACTUAL:',current_community_index)
                 dest_community_index = randrange(0,len(communities),1)
             
-            print('nodo',node,'pretende ir de comunidad',current_community_index,'a',dest_community_index)
+            # print('nodo',node,'pretende ir de comunidad',current_community_index,'a',dest_community_index)
 
             #Añadimos el nodo a destination_community y lo eliminamos el original:
-            print('comunidades originalmente',communities)
+            # print('comunidades originalmente',communities)
             #Copiamos las comunidades en len(communities) 'sets' en lugar de frozensets para poder añadir y
             # eliminar, aunque luego lo volveremos a convertir en frozenset
 
