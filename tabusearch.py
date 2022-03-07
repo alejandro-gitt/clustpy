@@ -109,9 +109,10 @@ def tabu_modularity_optimization(network, s_init):
     s_neigh = [] #solucion en el vecindario (neighbourhood)
     node_best = None #nodo con el mejor movimiento
    
-   #Inicializamos
+    #Inicializamos
     tabu_moves = [0] * (max(network.nodes) + 1)
-    max_idle = max_of_nonimprovements(len(network.nodes))
+    # max_idle = max_of_nonimprovements(len(network.nodes))
+    max_idle = 1
     num_idle = 0
     s_iter = s_init
     s_best = s_init
@@ -131,6 +132,6 @@ def tabu_modularity_optimization(network, s_init):
             num_idle = 0
         else:
             num_idle = num_idle + 1
-            
+        print(num_idle)
     return s_best
     
