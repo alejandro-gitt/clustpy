@@ -21,9 +21,12 @@ for i in range(len(df_edges)):
     tuples_from_to.append((df_edges['from'][i],df_edges['to'][i],df_edges['weight'][i]))
 MDG.add_weighted_edges_from(tuples_from_to)
 
+
 c = community.modularity_max.greedy_modularity_communities(MDG)
 
 print(mymodularity(MDG,c))
 
 optimized_communities = tabu_modularity_optimization(MDG,c)
-print(mymodularity(MDG,c))
+
+print(mymodularity(MDG,optimized_communities))
+
