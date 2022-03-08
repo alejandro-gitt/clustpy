@@ -105,7 +105,7 @@ def mymodularity(G, communities, weight="weight", resolution=1):
                 w_out_negative_comm = sum(-wt for u,v,wt in G.edges(community, data=weight, default=1) if wt < 0)# -wt porque tomamos los pesos con signo positivo
                 
                 #Para los in, cogemos TODOS los enlaces (no especificamos community) y de ellos cogemos los que tengan DESTINO algún nodo perteneciente a la comunidad.
-                w_in_all_comm = [wt for u,v,wt in G.edges( data=weight, default=1) if v in community]
+                # w_in_all_comm = [wt for u,v,wt in G.edges( data=weight, default=1) if v in community]
                 w_in_positive_comm = sum(wt for u,v,wt in G.edges( data=weight, default=1) if v in community and wt > 0)
                 w_in_negative_comm = sum(-wt for u,v,wt in G.edges( data=weight, default=1) if v in community and wt < 0)# -wt porque tomamos los pesos con signo positivo
                 

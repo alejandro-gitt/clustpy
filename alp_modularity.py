@@ -57,7 +57,6 @@ print('MODULARIDAD',mymodularity(G,communities))
 #- Si no hay mas comunidades (solo existe 1), crear una nueva e introducir el nodo en la misma
 show_mygraph(G,communities)
 
-print('optimizacion con tabu search:')
 particion_optimizada = tabu_modularity_optimization(G,communities)
 show_mygraph(G,particion_optimizada)
 print('MODULARIDAD OPTIMIZADA CON TABU SEARCH:', mymodularity(G,particion_optimizada))

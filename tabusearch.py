@@ -2,6 +2,7 @@ import networkx as nx
 import random
 from mymod import mymodularity
 from random import randrange
+import math
 
 def max_of_nonimprovements(net_size):
     return net_size/2
@@ -111,14 +112,16 @@ def tabu_modularity_optimization(network, s_init):
    
     #Inicializamos
     tabu_moves = [0] * (max(network.nodes) + 1)
-    # max_idle = max_of_nonimprovements(len(network.nodes))
-    max_idle = 1
+    max_idle = math.floor(max_of_nonimprovements(len(network.nodes)))
+    # max_idle = 1
     num_idle = 0
     s_iter = s_init
     s_best = s_init
     vueltas = 0
+
+    # print('maximo de vueltas inutiles',max_idle)
     while num_idle < max_idle:
-        print(vueltas,'VUELTAS')
+        # print(vueltas,'VUELTAS')
         vueltas = vueltas + 1
         (tabu_moves, s_neigh, node_best) = explore_neighborhood(network, s_iter[:], s_best[:], tabu_moves[:], s_neigh[:], node_best)
         for node in network.nodes:
@@ -132,6 +135,6 @@ def tabu_modularity_optimization(network, s_init):
             num_idle = 0
         else:
             num_idle = num_idle + 1
-        print(num_idle)
+        # print(num_idle)
     return s_best
     
