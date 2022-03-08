@@ -48,7 +48,6 @@ for i in range(n_grados):
         grafos.append(MDGaula)
         results_dict["%sº ESO %s" % (j,aula)] = {'graph': MDGaula, 'init_modularity': None,'final_modularity': None}
 
-print(results_dict['1º ESO A']['init_modularity'])
 # for MDG_clase in grafos:
 # #Creamos unas comunidades aleatorias, por ejemplo, los pares en una y los impares en otra
 
@@ -66,7 +65,7 @@ print(results_dict['1º ESO A']['init_modularity'])
 
 #     print('MODULARIDAD OPTIMIZADA',mymodularity(MDG_clase,optimized_communities[:]))
 
-for clase in list(results_dict.keys())[0:6]:
+for clase in list(results_dict.keys())[19:20]:
     
     MDG_clase = results_dict[clase]['graph']
     pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])

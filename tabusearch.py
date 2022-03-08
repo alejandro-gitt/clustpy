@@ -112,8 +112,8 @@ def tabu_modularity_optimization(network, s_init):
    
     #Inicializamos
     tabu_moves = [0] * (max(network.nodes) + 1)
-    max_idle = math.floor(max_of_nonimprovements(len(network.nodes)))
-    # max_idle = 1
+   # max_idle = math.floor(max_of_nonimprovements(len(network.nodes)))
+    max_idle = 1
     num_idle = 0
     s_iter = s_init
     s_best = s_init
