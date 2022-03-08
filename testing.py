@@ -21,12 +21,14 @@ for i in range(len(df_edges)):
     tuples_from_to.append((df_edges['from'][i],df_edges['to'][i],df_edges['weight'][i]))
 MDG.add_weighted_edges_from(tuples_from_to)
 
+#Creamos unas comunidades aleatorias, por ejemplo, los pares en una y los impares en otra
 
-c = community.modularity_max.greedy_modularity_communities(MDG)
+pares = frozenset([nodo for nodo in MDG.nodes if nodo%2 == 0])
+impares = frozenset([nodo for nodo in MDG.nodes if nodo%2 != 0])
 
+c = [pares,impares]
 print(mymodularity(MDG,c))
 
 optimized_communities = tabu_modularity_optimization(MDG,c)
 
 print(mymodularity(MDG,optimized_communities))
-
