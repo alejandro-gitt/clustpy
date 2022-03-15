@@ -330,12 +330,64 @@ for comm in communities:
     color_counter = color_counter + 1
 # nx.draw_networkx_nodes(g, pos, nodelist=[4, 5, 6, 7], node_color="tab:blue", **options)
 
+
+twoedges = []
+oneedges =[]
+neg_oneedges = []
+neg_twoedges = []
+
+for edge in g.edges(data = True):
+    edge_weight = edge[2]['weight'] # Con esto cogemos el peso del edge
+    if edge_weight == 2:
+        twoedges.append(edge)
+    if edge_weight == 1:
+        oneedges.append(edge)
+    if edge_weight == -1:
+        neg_oneedges.append(edge)
+    if edge_weight == -2:
+        neg_twoedges.append(edge)
+
 nx.draw_networkx_edges(
     g,
     pos,
-    edgelist=g.edges(data = False),
+    edgelist=twoedges,
     width=1,
-    alpha=0.5
+    alpha=0.5,
+    edge_color='g'
 )
+nx.draw_networkx_edges(
+    g,
+    pos,
+    edgelist=oneedges,
+    width=1,
+    alpha=0.5,
+    edge_color='b'
+)
+nx.draw_networkx_edges(
+    g,
+    pos,
+    edgelist=neg_oneedges,
+    width=1,
+    alpha=0.5,
+    edge_color='r'
+)
+nx.draw_networkx_edges(
+    g,
+    pos,
+    edgelist=neg_twoedges,
+    width=1,
+    alpha=0.5,
+    edge_color='purple'
+)
+
+
+# nx.draw_networkx_edges(
+#     g,
+#     pos,
+#     edgelist=g.edges(data = False),
+#     width=1,
+#     alpha=0.5
+# )
+
 # nx.draw(g, pos,with_labels = True,node_color = color_map)
 plt.show()
