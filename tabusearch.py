@@ -84,9 +84,16 @@ def solution_from_move(network, s_iter, node):
 
         return new_random_partition
     
-    return random.choice([change_to_random_community,create_new_community])(s_iter,node)
+
+    if len(s_iter) <= 1:
+        result = create_new_community(s_iter,node)
+    else:
+        result = random.choice([change_to_random_community,create_new_community])(s_iter,node)
+        
+    return result
 
 def explore_neighborhood(network, s_iter, s_best, tabu_moves, s_neigh, node_best):
+
     node_best = 0
     for node in network.nodes:
         s_move = solution_from_move(network, s_iter[:], node) #¿necesario introducir network?, creo que no (y de momento no se usa)
