@@ -242,7 +242,7 @@ for clase in list(results_dict.keys()):
     color_counter = 0 # for iterations
     black_patch = mpatches.Patch(color = 'black',label = '-2')
     red_patch  = mpatches.Patch(color = 'red',label = '-1')
-    yellow_patch = mpatches.Patch(color = 'yellow',label='0')
+    yellow_patch = mpatches.Patch(color = 'yellow',label = '0')
     blue_patch  = mpatches.Patch(color = 'blue',label = '1')
     green_patch  = mpatches.Patch(color = 'green',label = '2')
     ## DIBUJAMOS POR TABU:
@@ -259,7 +259,7 @@ for clase in list(results_dict.keys()):
 
     zeroedges = []
     twoedges = []
-    oneedges =[]
+    oneedges = []
     neg_oneedges = []
     neg_twoedges = []
 
@@ -318,7 +318,7 @@ for clase in list(results_dict.keys()):
         edge_color='black'
     )
     
-    plt.legend(handles = [black_patch,red_patch,yellow_patch,blue_patch,green_patch])
+    plt.legend(handles = [yellow_patch,blue_patch,green_patch])
     plt.title('Comunidades sin enlaces negativos seperadas según tabú (%s) modularidad: %s'%(clase,results_dict[clase]['final_modularity']))
     plt.savefig('No negativos según tabú (%s).png'%clase, dpi=300, bbox_inches='tight')
 
