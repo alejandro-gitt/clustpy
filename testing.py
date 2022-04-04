@@ -16,7 +16,6 @@ from netgraph import Graph
 import matplotlib.patches as mpatches
 
 
-
 nodes_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Nodes_t1.csv'
 edges_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Edges_t1.csv'
 df_nodes = pd.read_csv(nodes_path, sep = ';',encoding='unicode_escape')
@@ -180,11 +179,11 @@ for n in range(n_grados):
         
 tiempos = []
 mejoras_modularidad = []
-string_clase = '1º ESO A'
-n_clases_a_procesar = 2 #Empezando por la clase string_clase
+string_clase = '3º ESO B'
+n_clases_a_procesar = 1 #Empezando por la clase string_clase
 
-# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
-for clase in list(results_dict.keys()):
+for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
+# for clase in list(results_dict.keys()):
     MDG_clase = results_dict[clase]['graph']
     pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])
     impares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 != 0])
@@ -198,7 +197,7 @@ for clase in list(results_dict.keys()):
     # results_dict[clase]['by_gender_modularity'] = mymodularity(MDG_clase,results_dict[clase]['gender_partition'])
     start = time.time()
     print('tiempo inicial',start)
-    optimized_communities = tabu_modularity_optimization(MDG_clase,c[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
+    optimized_communities = tabu_modularity_optimization(MDG_clase,c[:],max_idle = 10*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('tiempo final',end)
     results_dict[clase]['final_modularity'] =  mymodularity(MDG_clase, optimized_communities[:])
@@ -211,8 +210,8 @@ mejoras_modularidad.append(results_dict[string_clase]['final_modularity']/result
 A continuación el tratamiento para poder posteriormente representar la red
 
 '''
-# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
-for clase in list(results_dict.keys()):
+for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
+#for clase in list(results_dict.keys()):
     g = results_dict[clase]['graph']
     communities = results_dict[clase]['partition']
     communities_genders  = results_dict[clase]['gender_partition']

@@ -16,9 +16,9 @@ df_edges = pd.read_csv(edges_path, sep = ';',encoding='unicode_escape')
 # f.close()
 
 '''Clase por clase'''
-string_curso = '1º ESO'
-string_grupo = 'A'
-string_clase = '1º ESO A'
+string_curso = '3º ESO'
+string_grupo = 'B'
+# string_clase = '2º ESO A' #Unused 
 # Eliminamos los enlaces fuera de la clase
 alumnos_en_aula = df_nodes[df_nodes["Curso"] == string_curso][df_nodes["Grupo"] == string_grupo]['Nodes']
 print(list(alumnos_en_aula))
@@ -32,6 +32,6 @@ enlaces_aula_filtrado = [(u,v,w) for (u,v,w) in enlaces_aula if v in list(alumno
 listToStr = ' '.join([str(elem) for elem in enlaces_aula_filtrado])
 x = listToStr.replace(") (", "\n").replace("(","").replace(")","").replace(",","")
 # print(column_list)
-f = open("edges_for_rada-clase.txt", "a")
+f = open("edges_rada_tercero_B.txt", "a")
 f.write(x)
 f.close()

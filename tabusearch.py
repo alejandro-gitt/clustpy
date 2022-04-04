@@ -107,9 +107,9 @@ def explore_neighborhood(network, s_iter, s_best, tabu_moves, s_neigh, node_best
     
     return tabu_moves, s_neigh, node_best
 
-def tabu_modularity_optimization(network, s_init,max_idle = 1):
+def tabu_modularity_optimization(network, s_init, max_idle = 1):
 
-    tabu_tenure = 2 # maximo numero de iteraciones en los que un mismo movimiento no se puede repetir
+    tabu_tenure = 5 # maximo numero de iteraciones en los que un mismo movimiento no se puede repetir
     tabu_moves = [] #contador de movimientos prohibidos, las posiciones son el entero que representa al nodo y el valor es el numero de movimientos restantes para poder volver a moverlo (siendo el maximo, tabu_tenure)
     max_idle = max_idle #max numero de iteraciones inactivas, posteriormente lo calculamos en funcion del tamaño del grafo
     num_idle = 0 #numero de iteraciones inactivas (AKA que no implican una mejora)
@@ -125,7 +125,7 @@ def tabu_modularity_optimization(network, s_init,max_idle = 1):
     s_iter = s_init
     s_best = s_init
     vueltas = 0
-    print('max_idle seleccionado',max_idle)
+    # print('max_idle seleccionado',max_idle)
     # print('maximo de vueltas inutiles',max_idle)
     while num_idle < max_idle:
         # print(vueltas,'VUELTAS')
