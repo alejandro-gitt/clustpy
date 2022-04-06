@@ -105,13 +105,13 @@ def mymodularity(G, communities, weight="weight", resolution=1):
                 w_out_negative_comm = sum(-wt for u,v,wt in G.edges(community, data=weight, default=1) if wt < 0)# -wt porque tomamos los pesos con signo positivo
                 
                 #Para los in, cogemos TODOS los enlaces (no especificamos community) y de ellos cogemos los que tengan DESTINO algún nodo perteneciente a la comunidad.
-                # w_in_all_comm = [wt for u,v,wt in G.edges( data=weight, default=1) if v in community]
+                
                 w_in_positive_comm = sum(wt for u,v,wt in G.edges( data=weight, default=1) if v in community and wt > 0)
                 w_in_negative_comm = sum(-wt for u,v,wt in G.edges( data=weight, default=1) if v in community and wt < 0)# -wt porque tomamos los pesos con signo positivo
                 
-                return L_a - (w_in_positive_comm*w_out_positive_comm)/(2*pos_total_weight) + (w_in_negative_comm*w_out_negative_comm)/(2*neg_total_weight)
+                return L_a - (w_in_positive_comm*w_out_positive_comm)/pos_total_weight + (w_in_negative_comm*w_out_negative_comm)/neg_total_weight
             
-            return (1/(2*(pos_total_weight + neg_total_weight)))*sum(map(community_contribution_directed_negatively_weighted, communities))
+            return (1/(pos_total_weight + neg_total_weight))*sum(map(community_contribution_directed_negatively_weighted, communities))
 
         else:
             #Negatively weighted, non directed 
@@ -124,6 +124,6 @@ def mymodularity(G, communities, weight="weight", resolution=1):
                 w_positive_comm = sum(wt for u, v, wt in G.edges(comm, data=weight, default=1) if wt > 0)
                 w_negative_comm = sum(-wt for u, v, wt in G.edges(comm, data=weight, default=1) if wt < 0)# -wt porque tomamos los pesos con signo positivo
                 
-                return L_a - (w_positive_comm**2)/(2*pos_total_weight) + (w_negative_comm**2)/(2*neg_total_weight)
+                return L_a - (w_positive_comm**2)/pos_total_weight + (w_negative_comm**2)/neg_total_weight
             
-            return (1/(2*(pos_total_weight + neg_total_weight)))*sum(map(community_contribution_negatively_weighted, communities))
+            return (1/(pos_total_weight + neg_total_weight))*sum(map(community_contribution_negatively_weighted, communities))

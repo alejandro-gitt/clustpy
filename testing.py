@@ -141,6 +141,17 @@ def divide_by_gender(dict_node_gen):
     
     return [frozenset(males),frozenset(females)]
     
+def n_times_tabu(graph,s_init,ntimes  = 1,max_idle = 1):
+    if ntimes == 1:
+         resulting_partition = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
+         print(mymodularity(graph,resulting_partition[:]))
+         return resulting_partition
+    for i in range(ntimes):
+        print('optimizando, vuelta',i)
+        s_iter = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
+        resulting_partition = n_times_tabu(graph,s_iter[:],max_idle = max_idle)
+        
+    return resulting_partition
 
 results_dict = {}
 ##CREAMOS UN MDG POR CADA CLASE QUE HAY
@@ -182,13 +193,18 @@ mejoras_modularidad = []
 string_clase = '3º ESO B'
 n_clases_a_procesar = 1 #Empezando por la clase string_clase
 
-for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
-# for clase in list(results_dict.keys()):
+# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
+for clase in list(results_dict.keys()):
     MDG_clase = results_dict[clase]['graph']
-    pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])
-    impares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 != 0])
-    c = [pares,impares]
-    
+
+
+    # pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])
+    # impares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 != 0])
+    # c = [pares,impares]
+
+    ##Creo una partición inical alternativa para ver si se aproxima más al resultado final de radatools
+    c = divide_by_gender(results_dict[clase]['alumnos con sexos'])
+    ##
     print('Longitud del grafo:',len(MDG_clase.nodes))
     # print('NODOS MDG CLASE',MDG_clase.nodes)
     results_dict[clase]['gender_partition'] = divide_by_gender(results_dict[clase]['alumnos con sexos'])
@@ -197,7 +213,12 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     # results_dict[clase]['by_gender_modularity'] = mymodularity(MDG_clase,results_dict[clase]['gender_partition'])
     start = time.time()
     print('tiempo inicial',start)
-    optimized_communities = tabu_modularity_optimization(MDG_clase,c[:],max_idle = 10*results_dict[clase]['numero de alumnos'])
+    optimized_communities = n_times_tabu(MDG_clase,c[:],ntimes = 13,max_idle = 0.5*results_dict[clase]['numero de alumnos'])
+    # optimized_communities0 = tabu_modularity_optimization(MDG_clase,c[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
+    # optimized_communities1 = tabu_modularity_optimization(MDG_clase,optimized_communities0[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
+    # optimized_communities2 = tabu_modularity_optimization(MDG_clase,optimized_communities1[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
+    # optimized_communities3 = tabu_modularity_optimization(MDG_clase,optimized_communities2[:], 0.5* results_dict[clase]['numero de alumnos'])
+    # optimized_communities = tabu_modularity_optimization(MDG_clase,optimized_communities3[:],max_idle= 2*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('tiempo final',end)
     results_dict[clase]['final_modularity'] =  mymodularity(MDG_clase, optimized_communities[:])
@@ -210,8 +231,8 @@ mejoras_modularidad.append(results_dict[string_clase]['final_modularity']/result
 A continuación el tratamiento para poder posteriormente representar la red
 
 '''
-for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
-#for clase in list(results_dict.keys()):
+# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
+for clase in list(results_dict.keys()):
     g = results_dict[clase]['graph']
     communities = results_dict[clase]['partition']
     communities_genders  = results_dict[clase]['gender_partition']
@@ -256,7 +277,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         color_counter = color_counter + 1
 
     twoedges = []
-    oneedges =[]
+    oneedges = []
     neg_oneedges = []
     neg_twoedges = []
 
