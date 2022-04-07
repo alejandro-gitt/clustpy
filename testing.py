@@ -18,12 +18,13 @@ import matplotlib.patches as mpatches
 
 nodes_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Nodes_t1.csv'
 edges_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Edges_t1.csv'
-df_nodes = pd.read_csv(nodes_path, sep = ';',encoding='unicode_escape')
-df_edges = pd.read_csv(edges_path, sep = ';',encoding='unicode_escape')
+df_nodes = pd.read_csv(nodes_path, sep=';', encoding='unicode_escape')
+df_edges = pd.read_csv(edges_path, sep=';', encoding='unicode_escape')
 MDG = nx.MultiDiGraph()
 MDG.add_nodes_from(df_nodes['Nodes'])
 
 '''Funciones necesarias para dibujar el grafo'''
+
 
 def community_layout(g, partition):
     """
@@ -57,6 +58,7 @@ def community_layout(g, partition):
 
     return pos
 
+
 def _position_communities(g, partition, **kwargs):
 
     # create a weighted graph, in which each node corresponds to a community,
@@ -80,6 +82,7 @@ def _position_communities(g, partition, **kwargs):
 
     return pos
 
+
 def _find_between_community_edges(g, partition):
 
     edges = dict()
@@ -94,6 +97,7 @@ def _find_between_community_edges(g, partition):
             except KeyError:
                 edges[(ci, cj)] = [(ni, nj)]
     return edges
+
 
 def _position_nodes(g, partition, **kwargs):
     """
@@ -119,6 +123,8 @@ def _position_nodes(g, partition, **kwargs):
 """
 Obtenemos los sexos de los nodos:
 """
+
+
 def divide_by_gender(dict_node_gen):
     '''
     Input:
@@ -138,44 +144,64 @@ def divide_by_gender(dict_node_gen):
         else:
             print('Ni H ni M')
 
-    
-    return [frozenset(males),frozenset(females)]
-    
-def n_times_tabu(graph,s_init,ntimes  = 1,max_idle = 1):
-    if ntimes == 1:
-         resulting_partition = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
-         print(mymodularity(graph,resulting_partition[:]))
-         return resulting_partition
+    return [frozenset(males), frozenset(females)]
+
+# def n_times_tabu(graph,s_init,ntimes  = 1,max_idle = 1):
+#     if ntimes == 1:
+#          resulting_partition = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
+#          print(mymodularity(graph,resulting_partition[:]))
+#          return resulting_partition
+#     for i in range(ntimes):
+#         print('optimizando, vuelta',i)
+#         s_iter = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
+#         resulting_partition = n_times_tabu(graph,s_iter[:],max_idle = max_idle)
+
+#     return resulting_partition
+
+
+def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
+
     for i in range(ntimes):
-        print('optimizando, vuelta',i)
-        s_iter = tabu_modularity_optimization(graph,s_init[:],max_idle = max_idle)
-        resulting_partition = n_times_tabu(graph,s_iter[:],max_idle = max_idle)
-        
+        print('optimizando, vuelta', i)
+        s_iter = tabu_modularity_optimization(
+            graph, s_init[:], max_idle=max_idle)
+
+        if ntimes != 1:
+            resulting_partition = n_times_tabu(
+                graph, s_iter[:], max_idle=max_idle)
+        else:
+            resulting_partition = s_iter
+
     return resulting_partition
 
+
 results_dict = {}
-##CREAMOS UN MDG POR CADA CLASE QUE HAY
+# CREAMOS UN MDG POR CADA CLASE QUE HAY
 n_grados = df_nodes["Curso"].nunique()
 for n in range(n_grados):
-    j=n+1
+    j = n+1
     aulas = df_nodes[df_nodes["Curso"] == "%sº ESO" % j]['Grupo'].unique()
     n_aulas = df_nodes[df_nodes["Curso"] == "%sº ESO" % j]['Grupo'].nunique()
 
     for aula in aulas:
-        alumnos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" % j][df_nodes["Grupo"] == "%s" % aula]['Nodes']
-        sexos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" % j][df_nodes["Grupo"] == "%s" % aula]['Sexo']
+        alumnos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" %
+                                   j][df_nodes["Grupo"] == "%s" % aula]['Nodes']
+        sexos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" %
+                                 j][df_nodes["Grupo"] == "%s" % aula]['Sexo']
 
-
-        dict_alumnos_sexos = {} # guardamos nodo : 'H' / nodo : 'M'
+        dict_alumnos_sexos = {}  # guardamos nodo : 'H' / nodo : 'M'
         for i in range(len(list(alumnos_en_aula))):
-            dict_alumnos_sexos[list(alumnos_en_aula)[i]] = list(sexos_en_aula)[i]
-        
+            dict_alumnos_sexos[list(alumnos_en_aula)[i]
+                               ] = list(sexos_en_aula)[i]
+
         fromtos = []
         for alumno in alumnos_en_aula:
-            fromtos.append(list(zip(list(df_edges.loc[df_edges['from'] == alumno]['from']),list(df_edges.loc[df_edges['from'] == alumno]['to']),list(df_edges.loc[df_edges['from'] == alumno]['weight']))))
+            fromtos.append(list(zip(list(df_edges.loc[df_edges['from'] == alumno]['from']), list(
+                df_edges.loc[df_edges['from'] == alumno]['to']), list(df_edges.loc[df_edges['from'] == alumno]['weight']))))
         enlaces_aula = [item for sublist in fromtos for item in sublist]
-  
-        enlaces_aula_filtrado = [(u,v,w) for (u,v,w) in enlaces_aula if v in list(alumnos_en_aula)] #Guardamos solo los enlaces que apunten fuera dentro de la clase
+
+        enlaces_aula_filtrado = [(u, v, w) for (u, v, w) in enlaces_aula if v in list(
+            alumnos_en_aula)]  # Guardamos solo los enlaces que apunten fuera dentro de la clase
 
         MDGaula = nx.MultiDiGraph()
         # print('ALUMNOS EN AULA A PUNTO DE SER INTRODUCIDOS(%sº ESO %s:)'%(j,aula),list(alumnos_en_aula))
@@ -183,49 +209,47 @@ for n in range(n_grados):
         MDGaula.add_nodes_from(list(alumnos_en_aula))
         MDGaula.add_weighted_edges_from(enlaces_aula_filtrado)
         # print('resultado de add nodes from',MDGaula.nodes)
-        results_dict["%sº ESO %s" % (j,aula)] = {'graph': MDGaula,'partition': None,'numero de alumnos': len(alumnos_en_aula) ,
-        'alumnos con sexos': dict_alumnos_sexos,'init_modularity': None,'final_modularity': None,'by_gender_modularity': None,'gender_partition': None}
+        results_dict["%sº ESO %s" % (j, aula)] = {'graph': MDGaula, 'partition': None, 'numero de alumnos': len(alumnos_en_aula),
+                                                  'alumnos con sexos': dict_alumnos_sexos, 'init_modularity': None, 'final_modularity': None, 'by_gender_modularity': None, 'gender_partition': None}
 
 
-        
 tiempos = []
 mejoras_modularidad = []
 string_clase = '3º ESO B'
-n_clases_a_procesar = 1 #Empezando por la clase string_clase
+n_clases_a_procesar = 1  # Empezando por la clase string_clase
 
 # for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
 for clase in list(results_dict.keys()):
     MDG_clase = results_dict[clase]['graph']
 
-
     # pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])
     # impares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 != 0])
     # c = [pares,impares]
 
-    ##Creo una partición inical alternativa para ver si se aproxima más al resultado final de radatools
+    # Creo una partición inical alternativa para ver si se aproxima más al resultado final de radatools
     c = divide_by_gender(results_dict[clase]['alumnos con sexos'])
     ##
-    print('Longitud del grafo:',len(MDG_clase.nodes))
+    print('Longitud del grafo:', len(MDG_clase.nodes))
     # print('NODOS MDG CLASE',MDG_clase.nodes)
-    results_dict[clase]['gender_partition'] = divide_by_gender(results_dict[clase]['alumnos con sexos'])
-    results_dict[clase]['by_gender_modularity'] = mymodularity(MDG_clase,results_dict[clase]['gender_partition'])
-    results_dict[clase]['init_modularity'] = mymodularity(MDG_clase,c[:])
+    results_dict[clase]['gender_partition'] = divide_by_gender(
+        results_dict[clase]['alumnos con sexos'])
+    results_dict[clase]['by_gender_modularity'] = mymodularity(
+        MDG_clase, results_dict[clase]['gender_partition'])
+    results_dict[clase]['init_modularity'] = mymodularity(MDG_clase, c[:])
     # results_dict[clase]['by_gender_modularity'] = mymodularity(MDG_clase,results_dict[clase]['gender_partition'])
     start = time.time()
-    print('tiempo inicial',start)
-    optimized_communities = n_times_tabu(MDG_clase,c[:],ntimes = 13,max_idle = 0.5*results_dict[clase]['numero de alumnos'])
-    # optimized_communities0 = tabu_modularity_optimization(MDG_clase,c[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
-    # optimized_communities1 = tabu_modularity_optimization(MDG_clase,optimized_communities0[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
-    # optimized_communities2 = tabu_modularity_optimization(MDG_clase,optimized_communities1[:],max_idle = 0.5*results_dict[clase]['numero de alumnos'])
-    # optimized_communities3 = tabu_modularity_optimization(MDG_clase,optimized_communities2[:], 0.5* results_dict[clase]['numero de alumnos'])
-    # optimized_communities = tabu_modularity_optimization(MDG_clase,optimized_communities3[:],max_idle= 2*results_dict[clase]['numero de alumnos'])
+    print('tiempo inicial', start)
+    optimized_communities = n_times_tabu(
+        MDG_clase, c[:], ntimes=13, max_idle=0.5*results_dict[clase]['numero de alumnos'])
     end = time.time()
-    print('tiempo final',end)
-    results_dict[clase]['final_modularity'] =  mymodularity(MDG_clase, optimized_communities[:])
+    print('tiempo final', end)
+    results_dict[clase]['final_modularity'] = mymodularity(
+        MDG_clase, optimized_communities[:])
     results_dict[clase]['partition'] = optimized_communities
-    
+
 tiempos.append(end-start)
-mejoras_modularidad.append(results_dict[string_clase]['final_modularity']/results_dict[string_clase]['init_modularity'] * 100)
+mejoras_modularidad.append(
+    results_dict[string_clase]['final_modularity']/results_dict[string_clase]['init_modularity'] * 100)
 '''
 
 A continuación el tratamiento para poder posteriormente representar la red
@@ -235,7 +259,7 @@ A continuación el tratamiento para poder posteriormente representar la red
 for clase in list(results_dict.keys()):
     g = results_dict[clase]['graph']
     communities = results_dict[clase]['partition']
-    communities_genders  = results_dict[clase]['gender_partition']
+    communities_genders = results_dict[clase]['gender_partition']
     # print('-------------------------RESULTADOS DE MODULARITY----------------------')
     # print('MODULARIDAD CON TABU',mymodularity(g,communities))
     # print('MODULARIDAD CON GENEROS',mymodularity(communities_genders))
@@ -245,35 +269,36 @@ for clase in list(results_dict.keys()):
     for comm in communities:
         for node in comm:
             communities_dict[node] = community_counter
-        community_counter = community_counter +1
+        community_counter = community_counter + 1
 
     counter = 0
     communities_gender_dict = {}
     for comm in communities_genders:
         for node in comm:
             communities_gender_dict[node] = counter
-        counter = counter +1
-
+        counter = counter + 1
 
     pos = community_layout(g, communities_dict)
     pos_genders = community_layout(g, communities_gender_dict)
 
-    list_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-    color_counter = 0 # for iterations
-    black_patch = mpatches.Patch(color = 'black',label = '-2')
-    red_patch  = mpatches.Patch(color = 'red',label = '-1')
-    blue_patch  = mpatches.Patch(color = 'blue',label = '1')
-    green_patch  = mpatches.Patch(color = 'green',label = '2')
-    ## DIBUJAMOS POR TABU:
+    list_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+                   '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    color_counter = 0  # for iterations
+    black_patch = mpatches.Patch(color='black', label='-2')
+    red_patch = mpatches.Patch(color='red', label='-1')
+    blue_patch = mpatches.Patch(color='blue', label='1')
+    green_patch = mpatches.Patch(color='green', label='2')
+    # DIBUJAMOS POR TABU:
     plt.figure()
 
     for comm in communities:
         communities_nodes = []
         for node in list(comm):
             communities_nodes.append(node)
-        #Por cada comunidad llamamos a draw nodes
-        nx.draw_networkx_nodes(g, pos, nodelist=communities_nodes, node_color = list_colors[color_counter])
-        nx.draw_networkx_labels(g, pos,alpha = 0.75, font_size= 9)
+        # Por cada comunidad llamamos a draw nodes
+        nx.draw_networkx_nodes(
+            g, pos, nodelist=communities_nodes, node_color=list_colors[color_counter])
+        nx.draw_networkx_labels(g, pos, alpha=0.75, font_size=9)
         color_counter = color_counter + 1
 
     twoedges = []
@@ -281,8 +306,8 @@ for clase in list(results_dict.keys()):
     neg_oneedges = []
     neg_twoedges = []
 
-    for edge in g.edges(data = True):
-        edge_weight = edge[2]['weight'] # Con esto cogemos el peso del edge
+    for edge in g.edges(data=True):
+        edge_weight = edge[2]['weight']  # Con esto cogemos el peso del edge
         if edge_weight == 2:
             twoedges.append(edge)
         if edge_weight == 1:
@@ -291,7 +316,7 @@ for clase in list(results_dict.keys()):
             neg_oneedges.append(edge)
         if edge_weight == -2:
             neg_twoedges.append(edge)
-    
+
     nx.draw_networkx_edges(
         g,
         pos,
@@ -324,23 +349,25 @@ for clase in list(results_dict.keys()):
         alpha=0.5,
         edge_color='black'
     )
-    
-    plt.legend(handles = [black_patch,red_patch,blue_patch,green_patch])
-    plt.title('Comunidades seperadas según tabú (%s) modularidad: %s'%(clase,results_dict[clase]['final_modularity']))
-    plt.savefig('Según tabú (%s).png'%clase, dpi=300, bbox_inches='tight')
+
+    plt.legend(handles=[black_patch, red_patch, blue_patch, green_patch])
+    plt.title('Comunidades seperadas según tabú (%s) modularidad: %s' %
+              (clase, results_dict[clase]['final_modularity']))
+    plt.savefig('Según tabú (%s).png' % clase, dpi=300, bbox_inches='tight')
 
     ## DIBUJAMOS POR GENEROS:##
 
     plt.figure()
 
-    color_counter = 0 # for iterations
+    color_counter = 0  # for iterations
     for comm in communities_genders:
         communities_nodes = []
         for node in list(comm):
             communities_nodes.append(node)
-        #Por cada comunidad llamamos a draw nodes
-        nx.draw_networkx_nodes(g, pos_genders, nodelist=communities_nodes, node_color = list_colors[color_counter])
-        nx.draw_networkx_labels(g, pos_genders,alpha = 0.75, font_size= 9)
+        # Por cada comunidad llamamos a draw nodes
+        nx.draw_networkx_nodes(
+            g, pos_genders, nodelist=communities_nodes, node_color=list_colors[color_counter])
+        nx.draw_networkx_labels(g, pos_genders, alpha=0.75, font_size=9)
         color_counter = color_counter + 1
 
     nx.draw_networkx_edges(
@@ -350,7 +377,7 @@ for clase in list(results_dict.keys()):
         width=1,
         alpha=0.5,
         edge_color='green',
-        label = '2'
+        label='2'
     )
     nx.draw_networkx_edges(
         g,
@@ -359,7 +386,7 @@ for clase in list(results_dict.keys()):
         width=1,
         alpha=0.5,
         edge_color='blue',
-        label = '1'
+        label='1'
     )
     nx.draw_networkx_edges(
         g,
@@ -368,7 +395,7 @@ for clase in list(results_dict.keys()):
         width=1,
         alpha=0.5,
         edge_color='red',
-        label = '-1'
+        label='-1'
     )
     nx.draw_networkx_edges(
         g,
@@ -377,9 +404,10 @@ for clase in list(results_dict.keys()):
         width=1,
         alpha=0.5,
         edge_color='black',
-        label = '-2'
+        label='-2'
     )
-    plt.title('Comunidades seperadas por género (%s) modularidad: %s'%(clase,results_dict[clase]['by_gender_modularity']))
-    plt.legend(handles = [black_patch,red_patch,blue_patch,green_patch])
-    plt.savefig('Por género (%s).png'%clase, dpi=300, bbox_inches='tight')
+    plt.title('Comunidades seperadas por género (%s) modularidad: %s' %
+              (clase, results_dict[clase]['by_gender_modularity']))
+    plt.legend(handles=[black_patch, red_patch, blue_patch, green_patch])
+    plt.savefig('Por género (%s).png' % clase, dpi=300, bbox_inches='tight')
     # plt.show()
