@@ -160,19 +160,35 @@ def divide_by_gender(dict_node_gen):
 
 
 def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
-
+    # Vemos la modularidad con la que empezamos:
+    best_mod = mymodularity(graph,s_init[:])
+    print('starting modularity',best_mod)
+    best_resulting_partition = s_init
+    # Ahora aplicamos tabu y vemos si alguna de las particiones de ahora en adelante mejora esta modularidad inicial
     for i in range(ntimes):
         print('optimizando, vuelta', i)
-        s_iter = tabu_modularity_optimization(
-            graph, s_init[:], max_idle=max_idle)
+        s_iter = tabu_modularity_optimization(graph, s_init[:], max_idle=max_idle)
+
+        #Vemos si ha mejorado la Q y si es el caso, guardamos esta partición:
+        iter_mod = mymodularity(graph,s_iter[:])
+        if  iter_mod > best_mod:
+            best_resulting_partition = s_iter
+            best_mod = iter_mod
+
 
         if ntimes != 1:
-            resulting_partition = n_times_tabu(
-                graph, s_iter[:], max_idle=max_idle)
+            resulting_partition = n_times_tabu(graph, s_iter[:], max_idle=max_idle)
+            resulting_mod = mymodularity(graph,resulting_partition[:])
+            if  resulting_mod > best_mod:
+                best_resulting_partition = resulting_partition
+                best_mod = resulting_mod
         else:
-            resulting_partition = s_iter
+            best_resulting_partition = s_iter
+            best_mod = mymodularity(graph,best_resulting_partition[:])
 
-    return resulting_partition
+    print(best_mod)
+
+    return best_resulting_partition
 
 
 results_dict = {}
@@ -215,11 +231,11 @@ for n in range(n_grados):
 
 tiempos = []
 mejoras_modularidad = []
-string_clase = '3º ESO B'
+string_clase = '1º ESO A'
 n_clases_a_procesar = 1  # Empezando por la clase string_clase
 
-# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
-for clase in list(results_dict.keys()):
+for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
+#for clase in list(results_dict.keys()):
     MDG_clase = results_dict[clase]['graph']
 
     # pares = frozenset([nodo for nodo in MDG_clase.nodes if nodo%2 == 0])
@@ -255,8 +271,8 @@ mejoras_modularidad.append(
 A continuación el tratamiento para poder posteriormente representar la red
 
 '''
-# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
-for clase in list(results_dict.keys()):
+for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
+#for clase in list(results_dict.keys()):
     g = results_dict[clase]['graph']
     communities = results_dict[clase]['partition']
     communities_genders = results_dict[clase]['gender_partition']
