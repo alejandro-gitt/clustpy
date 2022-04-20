@@ -1,4 +1,6 @@
 import networkx as nx
+import numpy as np
+import matplotlib.cm
 import matplotlib.pyplot as plt
 from numpy import partition
 import pandas as pd
@@ -14,6 +16,8 @@ from tabusearch import tabu_modularity_optimization
 import time
 from netgraph import Graph
 import matplotlib.patches as mpatches
+from matplotlib.axes._axes import _log as matplotlib_axes_logger
+matplotlib_axes_logger.setLevel('ERROR')
 
 
 nodes_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Nodes_t1.csv'
@@ -248,7 +252,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     start = time.time()
     print('tiempo inicial', start)
     optimized_communities = n_times_tabu(
-        MDG_clase, c[:], ntimes=20, max_idle=0.5*results_dict[clase]['numero de alumnos'])
+        MDG_clase, c[:], ntimes=2, max_idle=0.5*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('tiempo final', end)
     results_dict[clase]['final_modularity'] = mymodularity(
@@ -288,9 +292,13 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
 
     pos = community_layout(g, communities_dict)
     pos_genders = community_layout(g, communities_gender_dict)
+    ## Mejora de apariencia ##
+    cmap = matplotlib.cm.get_cmap('spring')
+    list_colors = [cmap(comm_color) for comm_color in np.linspace(0,1, len(communities))]
+    ##
+    # list_colors = ['#1f22b4', '#ff7f0e', '#2ca02c', '#d62728','#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+    
 
-    list_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
-                   '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
     color_counter = 0  # for iterations
     black_patch = mpatches.Patch(color='black', label='-2')
     red_patch = mpatches.Patch(color='red', label='-1')
@@ -330,7 +338,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos,
         edgelist=twoedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='angle3',
         edge_color='green'
     )
     nx.draw_networkx_edges(
@@ -338,7 +347,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos,
         edgelist=oneedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='angle3',
         edge_color='blue'
     )
     nx.draw_networkx_edges(
@@ -346,7 +356,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos,
         edgelist=neg_oneedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='angle3',
         edge_color='red'
     )
     nx.draw_networkx_edges(
@@ -354,7 +365,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos,
         edgelist=neg_twoedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='angle3',
         edge_color='black'
     )
 
@@ -383,7 +395,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos_genders,
         edgelist=twoedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='arc3,rad=0.5',
         edge_color='green',
         label='2'
     )
@@ -392,7 +405,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos_genders,
         edgelist=oneedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='arc3,rad=0.5',
         edge_color='blue',
         label='1'
     )
@@ -401,7 +415,8 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos_genders,
         edgelist=neg_oneedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='arc3,rad=0.5',
         edge_color='red',
         label='-1'
     )
@@ -410,12 +425,13 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         pos_genders,
         edgelist=neg_twoedges,
         width=1,
-        alpha=0.5,
+        alpha=0.2,
+        connectionstyle='arc3,rad=0.5',
         edge_color='black',
         label='-2'
     )
     plt.title('Comunidades seperadas por género (%s) modularidad: %s' %
               (clase, results_dict[clase]['by_gender_modularity']))
     plt.legend(handles=[black_patch, red_patch, blue_patch, green_patch])
-    plt.savefig('Por género (%s).png' % clase, dpi=300, bbox_inches='tight')
-    # plt.show()
+    # plt.savefig('Por género (%s).png' % clase, dpi=300, bbox_inches='tight')
+    plt.show()
