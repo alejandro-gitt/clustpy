@@ -166,7 +166,6 @@ def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
     best_resulting_partition = s_init
     # Ahora aplicamos tabu y vemos si alguna de las particiones de ahora en adelante mejora esta modularidad inicial
     for i in range(ntimes):
-        print('optimizando, vuelta', i)
         s_iter = tabu_modularity_optimization(graph, s_init[:], max_idle=max_idle)
 
         #Vemos si ha mejorado la Q y si es el caso, guardamos esta partición:
@@ -186,8 +185,6 @@ def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
             best_resulting_partition = s_iter
             best_mod = mymodularity(graph,best_resulting_partition[:])
 
-    print(best_mod)
-
     return best_resulting_partition
 
 
@@ -200,10 +197,8 @@ for n in range(n_grados):
     n_aulas = df_nodes[df_nodes["Curso"] == "%sº ESO" % j]['Grupo'].nunique()
 
     for aula in aulas:
-        alumnos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" %
-                                   j][df_nodes["Grupo"] == "%s" % aula]['Nodes']
-        sexos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" %
-                                 j][df_nodes["Grupo"] == "%s" % aula]['Sexo']
+        alumnos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" % j][df_nodes["Grupo"] == "%s" % aula]['Nodes']
+        sexos_en_aula = df_nodes[df_nodes["Curso"] == "%sº ESO" % j][df_nodes["Grupo"] == "%s" % aula]['Sexo']
 
         dict_alumnos_sexos = {}  # guardamos nodo : 'H' / nodo : 'M'
         for i in range(len(list(alumnos_en_aula))):
@@ -216,22 +211,19 @@ for n in range(n_grados):
                 df_edges.loc[df_edges['from'] == alumno]['to']), list(df_edges.loc[df_edges['from'] == alumno]['weight']))))
         enlaces_aula = [item for sublist in fromtos for item in sublist]
 
-        enlaces_aula_filtrado = [(u, v, w) for (u, v, w) in enlaces_aula if v in list(
-            alumnos_en_aula)]  # Guardamos solo los enlaces que apunten fuera dentro de la clase
+        enlaces_aula_filtrado = [(u, v, w) for (u, v, w) in enlaces_aula if v in list(alumnos_en_aula)]  # Guardamos solo los enlaces que apunten fuera de la clase
 
         MDGaula = nx.MultiDiGraph()
-        # print('ALUMNOS EN AULA A PUNTO DE SER INTRODUCIDOS(%sº ESO %s:)'%(j,aula),list(alumnos_en_aula))
-        # print('ENLACES A PUNTO DE SER INTRODUCIDOS (%sº ESO %s:)'%(j,aula),enlaces_aula)
         MDGaula.add_nodes_from(list(alumnos_en_aula))
         MDGaula.add_weighted_edges_from(enlaces_aula_filtrado)
-        # print('resultado de add nodes from',MDGaula.nodes)
         results_dict["%sº ESO %s" % (j, aula)] = {'graph': MDGaula, 'partition': None, 'numero de alumnos': len(alumnos_en_aula),
-                                                  'alumnos con sexos': dict_alumnos_sexos, 'init_modularity': None, 'final_modularity': None, 'by_gender_modularity': None, 'gender_partition': None}
+                                                  'alumnos con sexos': dict_alumnos_sexos, 'init_modularity': None, 'final_modularity': None,
+                                                  'by_gender_modularity': None, 'gender_partition': None}
 
 
 tiempos = []
 mejoras_modularidad = []
-string_clase = '1º ESO A'
+string_clase = '1º ESO C'
 n_clases_a_procesar = 1  # Empezando por la clase string_clase
 
 for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
@@ -256,7 +248,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     start = time.time()
     print('tiempo inicial', start)
     optimized_communities = n_times_tabu(
-        MDG_clase, c[:], ntimes=13, max_idle=0.5*results_dict[clase]['numero de alumnos'])
+        MDG_clase, c[:], ntimes=20, max_idle=0.5*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('tiempo final', end)
     results_dict[clase]['final_modularity'] = mymodularity(

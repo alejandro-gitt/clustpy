@@ -66,11 +66,9 @@ def solution_from_move(network, s_iter, node):
             # print('coincide el random',dest_community_index,'ACTUAL:',current_community_index)
             dest_community_index = randrange(0,len(communities),1)
         
-        # print('nodo',node,'pretende ir de comunidad',current_community_index,'a',dest_community_index)
-
-        #Añadimos el nodo a destination_community y lo eliminamos el original:
+        # Añadimos el nodo a destination_community y lo eliminamos el original:
         # print('comunidades originalmente',communities)
-        #Copiamos las comunidades en len(communities) 'sets' en lugar de frozensets para poder añadir y
+        # Copiamos las comunidades en len(communities) 'sets' en lugar de frozensets para poder añadir y
         # eliminar, aunque luego lo volveremos a convertir en frozenset
 
         communities_setted = [set(community) for community in communities]
@@ -119,16 +117,11 @@ def tabu_modularity_optimization(network, s_init, max_idle = 1):
    
     #Inicializamos
     tabu_moves = [0] * (max(network.nodes) + 1)
-   # max_idle = math.floor(max_of_nonimprovements(len(network.nodes)))
-    # max_idle = 10
     num_idle = 0
     s_iter = s_init
     s_best = s_init
     vueltas = 0
-    # print('max_idle seleccionado',max_idle)
-    # print('maximo de vueltas inutiles',max_idle)
     while num_idle < max_idle:
-        # print(vueltas,'VUELTAS')
         vueltas = vueltas + 1
         (tabu_moves, s_neigh, node_best) = explore_neighborhood(network, s_iter[:], s_best[:], tabu_moves[:], s_neigh[:], node_best)
         for node in network.nodes:
@@ -142,6 +135,5 @@ def tabu_modularity_optimization(network, s_init, max_idle = 1):
             num_idle = 0
         else:
             num_idle = num_idle + 1
-        # print(num_idle)
     return s_best
     
