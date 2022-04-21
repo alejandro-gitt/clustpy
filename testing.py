@@ -136,7 +136,7 @@ def divide_by_gender(dict_node_gen):
     {125: 'H',111: 'M'}
 
     Returns:
-    partition as in list made of two frozensets containing the male and female nodes.
+    partition as in list made of two frozensets containing the male and female nodes respectively.
     '''
     males = []
     females = []
@@ -179,15 +179,15 @@ def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
             best_mod = iter_mod
 
 
-        if ntimes != 1:
-            resulting_partition = n_times_tabu(graph, s_iter[:], max_idle=max_idle)
-            resulting_mod = mymodularity(graph,resulting_partition[:])
-            if  resulting_mod > best_mod:
-                best_resulting_partition = resulting_partition
-                best_mod = resulting_mod
-        else:
-            best_resulting_partition = s_iter
-            best_mod = mymodularity(graph,best_resulting_partition[:])
+        # if ntimes != 1:
+        #     resulting_partition = n_times_tabu(graph, s_iter[:], max_idle=max_idle)
+        #     resulting_mod = mymodularity(graph,resulting_partition[:])
+        #     if  resulting_mod > best_mod:
+        #         best_resulting_partition = resulting_partition
+        #         best_mod = resulting_mod
+        # else:
+        #     best_resulting_partition = s_iter
+        #     best_mod = mymodularity(graph,best_resulting_partition[:])
 
     return best_resulting_partition
 
@@ -227,7 +227,7 @@ for n in range(n_grados):
 
 tiempos = []
 mejoras_modularidad = []
-string_clase = '1º ESO C'
+string_clase = '1º ESO A'
 n_clases_a_procesar = 1  # Empezando por la clase string_clase
 
 for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:# (hay 21 clases). Como esta escrito solo saca la clase string_clase
@@ -252,7 +252,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     start = time.time()
     print('tiempo inicial', start)
     optimized_communities = n_times_tabu(
-        MDG_clase, c[:], ntimes=2, max_idle=0.5*results_dict[clase]['numero de alumnos'])
+        MDG_clase, c[:], ntimes=25, max_idle=0.5*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('tiempo final', end)
     results_dict[clase]['final_modularity'] = mymodularity(
@@ -293,8 +293,10 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     pos = community_layout(g, communities_dict)
     pos_genders = community_layout(g, communities_gender_dict)
     ## Mejora de apariencia ##
-    cmap = matplotlib.cm.get_cmap('spring')
-    list_colors = [cmap(comm_color) for comm_color in np.linspace(0,1, len(communities))]
+    cmap = matplotlib.cm.get_cmap('hot')
+    # list_colors = [cmap(comm_color) for comm_color in np.linspace(0,1, len(communities))]
+
+    list_colors = [matplotlib.colors.to_hex(list(cmap(comm_color))) for comm_color in np.linspace(0,1,len(communities))] # A hex porque en rgba no funcionaba bien
     ##
     # list_colors = ['#1f22b4', '#ff7f0e', '#2ca02c', '#d62728','#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
     
@@ -314,7 +316,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
         # Por cada comunidad llamamos a draw nodes
         nx.draw_networkx_nodes(
             g, pos, nodelist=communities_nodes, node_color=list_colors[color_counter])
-        nx.draw_networkx_labels(g, pos, alpha=0.75, font_size=9)
+        nx.draw_networkx_labels(g, pos, alpha=0.65, font_size=8)
         color_counter = color_counter + 1
 
     twoedges = []
