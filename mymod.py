@@ -26,7 +26,6 @@ def _require_partition(G, partition):
 
 require_partition = argmap(_require_partition, (0, 1))
 
-
 def mymodularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 

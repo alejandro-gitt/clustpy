@@ -8,7 +8,6 @@ df_nodes = pd.read_csv(nodes_path, sep = ';',encoding='unicode_escape')
 df_edges_nohead= pd.read_csv(edges_nohead_path, sep = ';',encoding='unicode_escape',usecols=[0,1,2])
 df_edges = pd.read_csv(edges_path, sep = ';',encoding='unicode_escape')
 
-
 '''Para la red entera:'''
 # print(df_edges)
 # f = open("edges_for_rada-full.txt", "a")

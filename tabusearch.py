@@ -2,7 +2,6 @@ import networkx as nx
 import random
 from mymod import mymodularity
 from random import randrange
-import math
 
 def max_of_nonimprovements(net_size):
     return net_size/2
