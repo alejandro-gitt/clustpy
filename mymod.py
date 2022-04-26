@@ -1,11 +1,7 @@
-from itertools import combinations
-
 import networkx as nx
 from networkx import NetworkXError
-from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 from networkx.algorithms.community.community_utils import is_partition
-
 
 class NotAPartition(NetworkXError):
     """Raised if a given collection is not a partition."""
@@ -13,7 +9,6 @@ class NotAPartition(NetworkXError):
     def __init__(self, G, collection):
         msg = f"{G} is not a valid partition of the graph {collection}"
         super().__init__(msg)
-
 
 def _require_partition(G, partition):
     """Decorator to check that a valid partition is input to a function
@@ -28,7 +23,6 @@ def _require_partition(G, partition):
         return G, partition
     raise nx.NetworkXError(
         "`partition` is not a valid partition of the nodes of G")
-
 
 require_partition = argmap(_require_partition, (0, 1))
 
@@ -70,7 +64,7 @@ def mymodularity(G, communities, weight="weight", resolution=1):
 
     directed = G.is_directed()
     if not nx.is_negatively_weighted(G):
-        # Original code from networkx for positive weighted, directed and undirected edges.
+        # Original code from networkx for positively weighted, directed and undirected edges.
         if directed:
             out_degree = dict(G.out_degree(weight=weight))
             in_degree = dict(G.in_degree(weight=weight))
@@ -104,7 +98,7 @@ def mymodularity(G, communities, weight="weight", resolution=1):
             neg_total_weight = sum(-wt for u, v,
                                    wt in G.edges(data=weight, default=1) if wt < 0)
 
-            # Añadiendo extension de direccionadas
+            # We add negatively weighted and directed computing
             def community_contribution_directed_negatively_weighted(community):
                 comm = set(community)
                 # Sum of all weights within a community
@@ -112,17 +106,19 @@ def mymodularity(G, communities, weight="weight", resolution=1):
                     comm, data=weight, default=1) if v in comm)
 
                 # G.edges devuelve los enlaces salientes a community, por ello nos aprovechamos para obtener los out:
+                # G.edges returns communities comming OUT of the community, we take advantage of this for obtaining the outwards weights:
                 w_out_positive_comm = sum(wt for u, v, wt in G.edges(
                     community, data=weight, default=1) if wt > 0)
-                # -wt porque tomamos los pesos con signo positivo
+                # -wt as we take the negative weights with a positive sign
                 w_out_negative_comm = sum(-wt for u, v, wt in G.edges(
                     community, data=weight, default=1) if wt < 0)
 
                 # Para los in, cogemos TODOS los enlaces (no especificamos community) y de ellos cogemos los que tengan DESTINO algún nodo perteneciente a la comunidad.
+                # For 'in's, we take ALL the edges (without specific communitiy) and from those, we take the ones that has as TARGET some node that belongs to the community.
 
                 w_in_positive_comm = sum(wt for u, v, wt in G.edges(
                     data=weight, default=1) if v in community and wt > 0)
-                # -wt porque tomamos los pesos con signo positivo
+                # -wt as we take the negative weights with a positive sign
                 w_in_negative_comm = sum(-wt for u, v, wt in G.edges(
                     data=weight, default=1) if v in community and wt < 0)
 
@@ -145,7 +141,7 @@ def mymodularity(G, communities, weight="weight", resolution=1):
                     comm, data=weight, default=1) if v in comm)
                 w_positive_comm = sum(wt for u, v, wt in G.edges(
                     comm, data=weight, default=1) if wt > 0)
-                # -wt porque tomamos los pesos con signo positivo
+                # -wt as we take the negative weights with a positive sign
                 w_negative_comm = sum(-wt for u, v, wt in G.edges(comm,
                                       data=weight, default=1) if wt < 0)
 
