@@ -108,10 +108,23 @@ def explore_neighborhood(network, s_iter, s_best, tabu_moves, s_neigh, node_best
     return tabu_moves, s_neigh, node_best
 
 def tabu_modularity_optimization(network, s_init, max_idle = 1):
+    '''
+    Performs tabu modularity optimization to obtain communities within the network
+
+    Parameters
+    --------------
+    network: Network's Multidigraph
+    s_init: Initial partition, this is a list of sets, each set contains nodes that conforms a community.
+    max_idle: max numbers of useless moves
+
+    Returns
+    -------------
+    s_best: best partition out of all the obtained before 'max_idle' idle iterations ocurred
+    '''
 
     tabu_tenure = 100 # maximo numero de iteraciones en los que un mismo movimiento no se puede repetir
     tabu_moves = [] #contador de movimientos prohibidos, las posiciones son el entero que representa al nodo y el valor es el numero de movimientos restantes para poder volver a moverlo (siendo el maximo, tabu_tenure)
-    max_idle = max_idle #max numero de iteraciones inactivas, posteriormente lo calculamos en funcion del tamaño del grafo
+    max_idle = max_idle #max numero de iteraciones inactivas
     num_idle = 0 #numero de iteraciones inactivas (AKA que no implican una mejora)
     s_iter = [] #solucion de la iteracion actual
     s_neigh = [] #solucion en el vecindario (neighbourhood)

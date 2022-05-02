@@ -3,7 +3,6 @@ import networkx as nx
 # from networkx.algorithms.community.community_utils import is_partition
 from mymod import mymodularity
 from tabusearch import tabu_modularity_optimization
-from tabusearch import find_nodes_community
 from random import randrange
 
 G = nx.MultiDiGraph()
