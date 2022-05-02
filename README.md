@@ -15,4 +15,6 @@ Please note that this algorithm works best when executed a number of iterations 
 
 Example:
 After applying 10 times tabu we can find that, according to its edges and modularity, the next graph has a final modularity of more than 0.28:
+
+
 ![image](https://user-images.githubusercontent.com/61252229/166304151-153453e4-69c4-476a-a6b9-4c1e376dfd71.png)
