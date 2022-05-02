@@ -4,7 +4,6 @@ import matplotlib.cm
 import matplotlib.pyplot as plt
 from numpy import partition
 import pandas as pd
-# For color mapping
 import matplotlib.colors
 import matplotlib.cm
 from mymod import mymodularity
@@ -15,17 +14,14 @@ from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 
 
-nodes_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Nodes_t1.csv'
-edges_path = r'C:\Users\proal\Documents\UC3M\2021-2022\2\TFG\algoritmo1\datos\Edges_t1.csv'
+nodes_path = r'.\Nodes_t1.csv' #path to a .csv with columns 
+edges_path = r'.\Edges_t1.csv'
 df_nodes = pd.read_csv(nodes_path, sep=';', encoding='unicode_escape')
 df_edges = pd.read_csv(edges_path, sep=';', encoding='unicode_escape')
-MDG = nx.MultiDiGraph()
-MDG.add_nodes_from(df_nodes['Nodes'])
 
-"""
+'''
 Functions for drawing:
-"""
-
+'''
 
 def community_layout(g, partition):
     """
@@ -118,6 +114,9 @@ def _position_nodes(g, partition, **kwargs):
 
     return pos
 
+'''
+Functions with algorithmic purposes:
+'''
 
 def divide_by_gender(dict_node_gen):
     '''
@@ -144,16 +143,41 @@ def divide_by_gender(dict_node_gen):
 
 
 def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
+    '''
+    Applies tabu modularity optimization n times. 
+    For an improved functioning, it takes the result of the (i-1) iteration as the input for the (i) iteration.
+    Also, it stores and returns only the best result of all the iterations.
+
+    Parameters
+    ----------
+    graph : Networkx MultiDiGraph which contains nodes and edges that may be positively or negatively weighted
+    
+    s_init: Initial solution AKA partition as a list of sets, being each set a different community
+
+    ntimes : Integer which determines the amount of times the algorithm will be executed sequentially.
+    node to be found in one of the communities given
+
+    max_idle : Number of maximum permitted idle moves by tabu (see tabu search)
+    
+    Returns
+    -------
+    best_resulting_partition : Best partition obtained out of the n iterations
+    '''
+
     # Vemos la modularidad con la que empezamos:
+    # We first check the initial modularity:
     best_mod = mymodularity(graph, s_init[:])
     print('starting modularity', best_mod)
     best_resulting_partition = s_init
+
     # Ahora aplicamos tabu y vemos si alguna de las particiones de ahora en adelante mejora esta modularidad inicial
+    # We now apply tabu and check if any oof the partitions from now on improves this inital Q
     for i in range(ntimes):
         s_iter = tabu_modularity_optimization(
             graph, s_init[:], max_idle=max_idle)
 
         # Vemos si ha mejorado la Q y si es el caso, guardamos esta partición:
+        # If Q improved, we store this partition:
         iter_mod = mymodularity(graph, s_iter[:])
         if iter_mod > best_mod:
             best_resulting_partition = s_iter
@@ -161,8 +185,33 @@ def n_times_tabu(graph, s_init, ntimes=1, max_idle=1):
 
     return best_resulting_partition
 
+
+'''
+Script:
+In this case, we have different classrooms with its students.
+nodes: Students
+edges: Relationship between mapped students as -2, -1, 1, 2 being -2 a really negative relationship (enemies) and +2 a really positive one (friends)
+
+We have stored the nodes and edges in Pandas dataframes and we can access them.
+'''
+
+'''
+1. We create a Networkx MultiDiGraph for each classroom.
+In order to have a compact way of saving data about each classroom we'll create a dictionary that contains:
+
+- 'graph': MultiDiGraph created with the edges and nodes of a classroom
+- 'partition': Initallized as None, it is for the posterior saving of the groups or clusters found by algorithms made for partitioning networks (such as tabu)
+- 'numero de alumnos': Number of students in the classroom,
+- 'alumnos con sexos': A special dictionary that stores for every node, its gender. Gender is given in the dataframe and now is stored as: " nodeID: 'H'/'M' " 
+- 'init_modularity': Initallized as None, it's the original modularity obtained by the original graph partitioned randomly
+- 'final_modularity': Initallized as None, it's the resulting modularity after the graph has been through a communities detection algorithm
+- 'by_gender_modularity': Initallized as None, it's the modularity we obtain if we divide just in two clusters: male and female students
+- 'gender_partition': Initallized as None, it is a list of sets, being each set a different community, in this case: set of males and set of females
+
+'''
 results_dict = {}
 n_grados = df_nodes["Curso"].nunique()
+
 for n in range(n_grados):
     j = n+1
     aulas = df_nodes[df_nodes["Curso"] == "%sº ESO" % j]['Grupo'].unique()
@@ -193,23 +242,32 @@ for n in range(n_grados):
         MDGaula.add_nodes_from(list(alumnos_en_aula))
         MDGaula.add_weighted_edges_from(enlaces_aula_filtrado)
 
-        # Dict for storing the different values
+        # Dict for storing the different
         results_dict["%sº ESO %s" % (j, aula)] = {'graph': MDGaula, 'partition': None, 'numero de alumnos': len(alumnos_en_aula),
                                                   'alumnos con sexos': dict_alumnos_sexos, 'init_modularity': None, 'final_modularity': None,
                                                   'by_gender_modularity': None, 'gender_partition': None}
 
+'''
+2. Processing the graphs
 
-string_clase = '1º ESO A'
-n_clases_a_procesar = 3  # Empezando por la clase string_clase
+Now, we separate by genders, apply algorithms and get modularity values and store it at the dictionaries
+'''
 
-for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
-    # for clase in list(results_dict.keys()):
+'''
+Note: As it is currently written, it will apply the processing chunk to every classrooms' graph. This could lead to undesired execution times.
+In case you want to see a quicker example, pleas uncomment the next three lines and comment the fourth as well as the first two lines in next step (3.).
+This will just target a single (or n_clases_a_procesar) graph and will process and draw it.
+'''
+#string_clase = '1º ESO A'#Uncomment if processing takes too long
+#n_clases_a_procesar = 1  #Uncomment if processing takes too long
+#for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]: #Uncomment if processing takes too long
+for clase in list(results_dict.keys()): #COMMENT if processing takes too long
     MDG_clase = results_dict[clase]['graph']
     print('Graph\'s length:', len(MDG_clase.nodes))
 
     # Our initial partition will be based on genders:
 
-    # Dividing by gender and storing the initial modularity value (Initial partition coould be any)
+    # Dividing by gender and storing the initial modularity value (Initial partition could be any)
     results_dict[clase]['gender_partition'] = divide_by_gender(
         results_dict[clase]['alumnos con sexos'])
 
@@ -233,10 +291,13 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     results_dict[clase]['partition'] = optimized_communities
 
 '''
-Processing needed for drawing later:
+3. Drawing the graphs
+Finally just some preprocessing and work to be done in order to just draw the graphs separated into communities, please note:
+- Node colors represent different communities
+- Edges colors represent different weights (as explained in the legend)
 '''
-for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]:
-    # for clase in list(results_dict.keys()):
+#for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]: #Uncomment if processing takes too long
+for clase in list(results_dict.keys()): #COMMENT if processing takes too long
     g = results_dict[clase]['graph']
     communities = results_dict[clase]['partition']
     communities_genders = results_dict[clase]['gender_partition']
@@ -290,7 +351,7 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     neg_twoedges = []
 
     for edge in g.edges(data=True):
-        edge_weight = edge[2]['weight']  # Con esto cogemos el peso del edge
+        edge_weight = edge[2]['weight']  # Get edge's weight
         if edge_weight == 2:
             twoedges.append(edge)
         if edge_weight == 1:
@@ -338,9 +399,9 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     )
 
     plt.legend(handles=[black_patch, red_patch, blue_patch, green_patch])
-    plt.title('Comnunities by tabu (%s) modularity: %s' %
+    plt.title('Communities by tabu (%s) modularity: %s' %
               (clase, results_dict[clase]['final_modularity']))
-    plt.savefig('Según tabú (%s).png' % clase, dpi=300, bbox_inches='tight')
+    plt.savefig('Tabu(%s).png' % clase, dpi=300, bbox_inches='tight')
 
 # Simply by genders figures
 
@@ -400,5 +461,5 @@ for clase in list(results_dict.keys())[list(results_dict).index(string_clase):li
     plt.title('Communities by gender (%s) modularity: %s' %
               (clase, results_dict[clase]['by_gender_modularity']))
     plt.legend(handles=[black_patch, red_patch, blue_patch, green_patch])
-    # plt.savefig('Por género (%s).png' % clase, dpi=300, bbox_inches='tight')
+    plt.savefig('By gender(%s).png' % clase, dpi=300, bbox_inches='tight')
     plt.show()

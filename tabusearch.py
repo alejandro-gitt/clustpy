@@ -6,25 +6,25 @@ from random import randrange
 def max_of_nonimprovements(net_size):
     return net_size/2
 def find_nodes_community(communities, target_node):
-    ''' This function takes a list of communities to find which one hosts the target node
+    '''
+    This function takes a list of communities to find which one hosts the target node
     
     Parameters
     ----------
-    communities : list or iterable of set of nodes.
-        groups of nodes, one of which, contains our targeted node
+    communities : list or iterable of set of nodes
+    groups of nodes, one of which, contains our targeted node
 
     target_node : int
-     node to be found in one of the communities given
+    node to be found in one of the communities given
     
     Returns
     -------
-    host_community_position : position of the community that contains the node in the given list 'communities'
+    host_community_position : Position of the community that contains the node in the given list 'communities'
     '''
 
     if not any([target_node in comm for comm in communities]):
-        #TODO ADD EXCEPTION
-        print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
-        return -1
+        raise NameError('Target node not found in any of the given communities')
+
 
     i = 0
     for community in communities:
@@ -35,18 +35,22 @@ def find_nodes_community(communities, target_node):
 
         i = i+1
 
-def solution_from_move(network, s_iter, node):
-    
-    # Buscamos en este metodo mover un solo nodo, escogiendo aleatoriamente entre las opciones:
-    # - Mover el nodo de una comunidad a otra (aleatoria)
-    # - Crear una nueva comunidad e incluir el nodo en esta.(El nodo solo puede estar en una comunidad a la vez)
-    current_community_index = find_nodes_community(s_iter, node) #INDICE DE LA COMUNIDAD EN LA QUE SE ENCUENTRA EL NODO ACTUALMENTE
+def solution_from_move(s_iter, node):
+    '''
+     In this method, we want to move 'node', so we choose randomly one of the next options:
+     - Move node from its current community to another existing one (randomly chosen).
+     - Create a new community and insert the node in it.
+
+     Buscamos en este metodo mover un solo nodo, escogiendo aleatoriamente entre las opciones:
+     - Mover el nodo de su comunidad a otra 
+     - Crear una nueva comunidad e incluir el nodo en esta.
+     '''
+   
+    current_community_index = find_nodes_community(s_iter, node) 
 
     def create_new_community(communities,node):
 
-        # Primero, creamos una nueva comunidad y añadimos nuestro nodo en ella
         communities.append(frozenset({node}))
-        # Eliminamos el nodo de su comunidad origen
         communities_setted = [set(community) for community in communities]
         communities_setted[current_community_index].remove(node)
         final_sol = [frozenset(community_setted) for community_setted in communities_setted]
@@ -58,16 +62,14 @@ def solution_from_move(network, s_iter, node):
         return final_sol
 
     def change_to_random_community(communities, node):
-        # Ahora, movemos node a uno aleatorio que no sea en el que se encuentra actualmente
         # Movemos el nodo de su comunidad actual a otra aleatoria
+        # Moving node from current community to a random, different community
 
         dest_community_index = randrange(0,len(communities),1)
         while(dest_community_index == current_community_index):
-            # print('coincide el random',dest_community_index,'ACTUAL:',current_community_index)
             dest_community_index = randrange(0,len(communities),1)
         
         # Añadimos el nodo a destination_community y lo eliminamos el original:
-        # print('comunidades originalmente',communities)
         # Copiamos las comunidades en len(communities) 'sets' en lugar de frozensets para poder añadir y
         # eliminar, aunque luego lo volveremos a convertir en frozenset
 
@@ -75,7 +77,7 @@ def solution_from_move(network, s_iter, node):
         communities_setted[dest_community_index].add(node)
         communities_setted[current_community_index].remove(node)
         new_random_partition = [frozenset(community_setted) for community_setted in communities_setted]
-        #HAY QUE TRATAR CUANDO SE QUEDA UNA COMUNIDAD VACÍA
+        #If a community turns out empty, we need to remove it
         for com in new_random_partition:
             if len(com) == 0:# It is an empty community
                 new_random_partition.remove(com)
@@ -94,7 +96,7 @@ def explore_neighborhood(network, s_iter, s_best, tabu_moves, s_neigh, node_best
 
     node_best = 0
     for node in network.nodes:
-        s_move = solution_from_move(network, s_iter[:], node) #¿necesario introducir network?, creo que no (y de momento no se usa)
+        s_move = solution_from_move(s_iter[:], node) 
 
         if mymodularity(network,s_move) > mymodularity(network,s_best):
             tabu_moves[node] = 0
@@ -125,7 +127,7 @@ def tabu_modularity_optimization(network, s_init, max_idle = 1):
         vueltas = vueltas + 1
         (tabu_moves, s_neigh, node_best) = explore_neighborhood(network, s_iter[:], s_best[:], tabu_moves[:], s_neigh[:], node_best)
         for node in network.nodes:
-            #decrease the tabu moves 
+            #reducimos los movimientos de tabu
             tabu_moves[node] = max(0,tabu_moves[node]-1) 
             
         tabu_moves[node_best] = tabu_tenure
