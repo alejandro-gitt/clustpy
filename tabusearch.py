@@ -22,6 +22,7 @@ def find_nodes_community(communities, target_node):
     '''
 
     if not any([target_node in comm for comm in communities]):
+        #TODO ADD EXCEPTION
         print('TARGET NODE NOT FOUND IN ANY OF THE COMMUNITIES')
         return -1
 
