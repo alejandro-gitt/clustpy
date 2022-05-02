@@ -14,7 +14,7 @@ from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 
 
-nodes_path = r'.\Nodes_t1.csv' #path to a .csv with columns 
+nodes_path = r'.\Nodes_t1.csv' 
 edges_path = r'.\Edges_t1.csv'
 df_nodes = pd.read_csv(nodes_path, sep=';', encoding='unicode_escape')
 df_edges = pd.read_csv(edges_path, sep=';', encoding='unicode_escape')
@@ -258,9 +258,9 @@ Note: As it is currently written, it will apply the processing chunk to every cl
 In case you want to see a quicker example, pleas uncomment the next three lines and comment the fourth as well as the first two lines in next step (3.).
 This will just target a single (or n_clases_a_procesar) graph and will process and draw it.
 '''
-#string_clase = '1º ESO A'#Uncomment if processing takes too long
-#n_clases_a_procesar = 1  #Uncomment if processing takes too long
-#for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]: #Uncomment if processing takes too long
+# string_clase = '2º ESO B'#Uncomment if processing takes too long
+# n_clases_a_procesar = 1  #Uncomment if processing takes too long
+# for clase in list(results_dict.keys())[list(results_dict).index(string_clase):list(results_dict).index(string_clase)+n_clases_a_procesar]: #Uncomment if processing takes too long
 for clase in list(results_dict.keys()): #COMMENT if processing takes too long
     MDG_clase = results_dict[clase]['graph']
     print('Graph\'s length:', len(MDG_clase.nodes))
@@ -281,7 +281,7 @@ for clase in list(results_dict.keys()): #COMMENT if processing takes too long
     # Applying tabu modularity optimization for optimizing communities:
     start = time.time()
     optimized_communities = n_times_tabu(
-        MDG_clase, c[:], ntimes=1, max_idle=0.5*results_dict[clase]['numero de alumnos'])
+        MDG_clase, c[:], ntimes=10, max_idle=0.5*results_dict[clase]['numero de alumnos'])
     end = time.time()
     print('Done in ', end-start, 's')
 
