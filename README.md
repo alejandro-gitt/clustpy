@@ -6,7 +6,8 @@ It uses Networkx's networks class for being able to use all of theirs functions 
 In this repo you'll find:
 
 - *mymod.py*: Contains a function (mymodularity) that computes a network's modularity. This is an extension of networkx's to also compute modularity on directed, positively or negatively weighted graphs.
-- calc_mod_example.py: Example for mymodularity's use. Script with a hard-coded example multidigraph with the only purpose of calculating its modularity.
+
+- *calc_mod_example.py*: Example for mymodularity's use. Script with a hard-coded example multidigraph with the only purpose of calculating its modularity.
 
 - *tabusearch.py*: Contains the tabu_modularity_optimization function, that will execute the tabu communities search for the input network.
 Please note that this algorithm works best when executed a number of iterations such that the output of the previous iteration will be the input for the current iteration and so on. An example of this is shown at the funcion n_times_tabu that may be found in the testing.py file.
